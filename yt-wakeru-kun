@@ -1,3 +1,4 @@
+#!/usr/bin/ruby
 require 'uri'
 require 'optparse'
 require 'open3'
@@ -79,7 +80,7 @@ class Generator
     index = 0
     Dir::entries(@output_dir).each do |file|
       if file =~ /png$/
-        frames << file
+        frames << "#{@output_dir}/#{file}"
         if frames.length > @opts[:frames].to_i
           print '.'
           o,e,s = Open3.capture3("convert -limit memory 256MB -limit disk 2GB -delay 10 -loop 0 #{frames.join(' ')} -resize 420x315 #{output_complete_name(index)}")
@@ -99,7 +100,7 @@ class Generator
     puts "\nCleaning"
     Dir::entries(@output_dir).each do |file|
       if file !~ /complete/ && file =~ /#{@timestamp}/
-        File.delete(file)
+        File.delete("#{@output_dir}/#{file}")
       end
     end
   end
@@ -111,7 +112,7 @@ class Generator
   def downloaded_movie_name
     Dir::entries(@output_dir).each do |file|
       if file =~ /.+\.(mp4|webm|mkv)/
-        return file
+        return "#{@output_dir}/#{file}"
       end
     end
   end
